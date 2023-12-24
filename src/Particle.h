@@ -7,12 +7,12 @@ class Particle
 public:
 	Particle();
 	~Particle();
-
-	ofColor color;
 	void setup();
-	void update(float speed , float noise);
+	void update(float speed , float noise,float msX, float msY, char key);
 	void draw(float sizeDot);
 	void repel(vector<ofVec2f>replePt);
+
+	ofColor color;
 	ofVec2f pos;
 	ofVec2f vel;
 	ofVec2f frc;
@@ -23,6 +23,8 @@ public:
 	float lifetime;
 	ofColor startColor;
 	ofColor endColor;
+	void moveAway(float repelX, float repelY);
+	void moveToPoint(float attractX, float attractY);
 
 
 };

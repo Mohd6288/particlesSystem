@@ -34,6 +34,7 @@ class ofApp : public ofBaseApp{
 		ofxFloatSlider lineThickness;
 		ofxFloatSlider numPoint;
 		ofxFloatSlider sizeDot;
+		ofxLabel labelInfo;  // Label for text
 
 		//color picker
 		ofxFloatSlider blueCol;
@@ -47,5 +48,6 @@ class ofApp : public ofBaseApp{
 		float emitterLifespan; // How long each particle lives for
 		float emitterMass; // How massive each particle is
 		float emitterAge;
-		bool bDrawLines;	
+		bool bDrawLines;
+		int currentKey;
 };

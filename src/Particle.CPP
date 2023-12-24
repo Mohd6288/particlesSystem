@@ -1,15 +1,15 @@
 #include "Particle.h"
 
+using namespace glm;
 // Constructor
 Particle::Particle()
 {
-    cout << "Alive now" << endl;
-};
+}
 
 // Destructor
 Particle::~Particle()
 {
-    cout << "Dead now" << endl;
+    //cout << "Dead now" << endl;
 };
 
 // Initialize particle properties
@@ -32,14 +32,14 @@ void Particle::setup()
 }
 
 // Update particle position and velocity
-void Particle::update(float speed, float noise)
+void Particle::update(float speed, float noise , float msX, float msY, char key)
 {
     pos += vel;
     vel *= drag;
     frc.x = ofSignedNoise(uniqueVal.x, pos.y * 0.01, ofGetElapsedTimef() * 0.2);
     frc.y = ofSignedNoise(uniqueVal.y, pos.x * 0.01, ofGetElapsedTimef() * 0.2);
     frc *= noise;
-    vel += frc * 0.4;
+    vel += frc;
 
     // Bounce off walls
     if (pos.x + vel.x > ofGetWidth()) {
@@ -70,6 +70,16 @@ void Particle::update(float speed, float noise)
         lifetime -= 1;
     }
 
+    if (msX > 0 && msX < ofGetWidth() && msY > 0 && msY < ofGetHeight()) {
+        if (key == '1') {
+            moveAway(msX, msY);
+        }
+        else if (key == '2') {
+            moveToPoint(msX, msY);
+        }
+
+    }
+
     pos += vel * speed;
 }
 
@@ -98,11 +108,46 @@ void Particle::repel(vector<ofVec2f> repelPt)
 
     for (int i = 0; i < repelPt.size(); i++) {
         float dist = pos.distance(repelPt[i]);
-
+        cout << dist << endl;
         // If the particle is close to a repelling point, apply force
         if (dist < 150) {
-            ofVec2f newRepelPt = repelPt[i] - pos;
-            repelFrc += newRepelPt * 0.0001;
+            vec2 newRepelPt = repelPt[i] - pos;
+            repelFrc += newRepelPt * 0.0000002;
         }
     }
+}
+
+//move toward the repel X and Y point
+void Particle::moveAway(float repelX, float repelY) {
+
+    vec2 repel = ofVec2f(repelX, repelY);
+    vec2 direction = pos - repel; // vector subtraction, the order matters!
+
+    float directionMag = length(direction);
+    //we have to make sure direction magnitude isn't 0 before normalizing
+    if (directionMag > 0) {
+        direction = normalize(direction);
+    }
+
+    if (directionMag < 200) {
+        vel += direction * 20;
+    }
+
+}
+
+//--------------------------------------------------------------
+//move toward the attract X and Y point
+void Particle::moveToPoint(float attractX, float attractY) {
+
+    vec2 attractor = ofVec2f(attractX, attractY);
+    vec2 direction = attractor - pos; // vector subtraction, the order matters!
+
+    float directionMag = length(direction);
+    //we have to make sure direction magnitude isn't 0 before normalizing
+    if (directionMag > 0) {
+        direction = normalize(direction);
+    }
+
+    vel += direction * 20;
+
 }

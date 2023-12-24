@@ -4,14 +4,7 @@
 //--------------------------------------------------------------
 void ofApp::setup() {
 	// Initialize particles
-	/*
-	for (int i = 0; i < numPoint; i++) {
-		Particle p;
-		p.setup();
-		particles.push_back(p);
-	}
-	*/
-
+	//particles.reserve(1000);
 	for (int i = 0; i < numPoint; i++) {
 		Particle* p = new Particle(); // Create particle on the heap
 		p->setup();
@@ -24,7 +17,8 @@ void ofApp::setup() {
 	// Set initial values for the particle emitter
 	emitterPos.set(ofGetWidth() * 0.5, ofGetHeight() * 0.5); // Center of the screen
 	emitterVel.set(2, 0); // Emit particles to the right
-	emitterRate = 10; // Number of particles to emit per frame
+
+	emitterRate = 1; // Number of particles to emit per frame
 	emitterLifespan = 3.0; // How long each particle lives for
 	emitterMass = 1.0; // How massive each particle is
 	emitterAge = 20;
@@ -35,9 +29,11 @@ void ofApp::setup() {
 	gui.add(noiseScale.setup("#NoiseScale", 0.01, 0, 0.1));
 	gui.add(trail.setup("#Trail", 6, 0, 20));
 	gui.add(maxLineDistance.setup("LineDistance", 20, 10, 100));
-	//gui.add(lineThickness.setup("Thickness", 1.0, 0.1, 3));
-	gui.add(numPoint.setup("Point", 10, 100, 2000));
+	gui.add(lineThickness.setup("Thickness", 1.0, 10, 30));
+	gui.add(numPoint.setup("Point", 10, 100, 200));
 	gui.add(sizeDot.setup("Dot Size", 1, 1, 20));
+	gui.add(labelInfo.setup("Press","1,2,3 And Mouse Drag to interact"));
+
 
 	// Create color picker
 	gui.add(redCol.setup("Red Color", 1, 1, 255));
@@ -58,18 +54,6 @@ void ofApp::setup() {
 
 void ofApp::update() {
 	// Emit new particles from the emitter
-	/*
-	for (int i = 0; i < emitterRate; i++) {
-		Particle p;
-		p.setup();
-		p.pos.set(emitterPos); // Set the position of the particle to the emitter position
-		p.vel.set(emitterVel);
-		p.color = ofColor::fromHsb(ofRandom(255), 200, 255); // Random color for each emitted particle
-		p.size = sizeDot;
-		p.update(overallSpeed, noiseScale);
-		particles.push_back(p); // Assuming 'particles' is a vector of particles in ofApp.h
-	}
-	*/
 	for (int i = 0; i < emitterRate; i++) {
 		Particle* p = new Particle(); // Create particle on the heap
 		p->setup();
@@ -78,7 +62,7 @@ void ofApp::update() {
 		p->color = ofColor::fromHsb(ofRandom(255), 200, 255); // Random color for each emitted particle
 		p->size = sizeDot;
 		p->lifetime = emitterAge;
-		p->update(overallSpeed, noiseScale);
+		p->update(overallSpeed, noiseScale,mouseX,mouseY,currentKey);
 		particles.push_back(p); // Assuming 'particles' is a vector of particle pointers in ofApp.h
 	}
 
@@ -98,7 +82,7 @@ void ofApp::update() {
 	// Update the particles
 	if (p.size() != numPoint) {
 		// If the number of particles is not equal to the specified number, reassign particles
-		p.assign(numPoint, Particle());
+		p.assign(int(numPoint), Particle());
 		for (int i = 0; i < p.size(); i++) {
 			p[i].setup();
 		}
@@ -107,8 +91,9 @@ void ofApp::update() {
 	// Update each particle
 	for (int i = 0; i < p.size(); i++) {
 		p[i].repel(blobPts); // Repel particles based on blob points
-		p[i].update(overallSpeed, noiseScale);
+		p[i].update(overallSpeed, noiseScale, mouseX, mouseY, currentKey);
 	}
+
 
 
 	if (emitterAge > 0) {
@@ -116,26 +101,18 @@ void ofApp::update() {
 	for (Particle* a : particles) {
 		delete a;
 	}
-	cout << "Some of them are dead" << endl;
 	particles.clear();
+	//cout << "Some of them are dead" << endl;
 	}
 }
 
 
 //--------------------------------------------------------------
 void ofApp::draw() {
-	// Toggle drawing lines if 'L' key is pressed
-	if (ofGetKeyPressed('L')) {
-		bDrawLines = !bDrawLines;
-	}
-
 	// Clear the background with a trail effect
 	ofSetColor(0, 0, 0, trail);
 	ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
-
-	// Draw the webcam video frame if initialized
 	
-
 	// Draw lines and contours if the flag is set
 	if (bDrawLines) {
 		ofSetColor(255, 255, 255);
@@ -163,7 +140,7 @@ void ofApp::draw() {
 	}
 
 	// Draw GUI controls
-	ofSetHexColor(0xffffff); // Set color for GUI controls
+	ofSetHexColor(0xf00ff); // Set color for GUI controls
 	gui.draw();
 }
 
@@ -171,6 +148,11 @@ void ofApp::draw() {
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
+
+	currentKey = key;
+	if (key == '3') {
+	 bDrawLines = !bDrawLines;
+	}
 
 }
 
