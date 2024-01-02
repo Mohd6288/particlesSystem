@@ -50,4 +50,6 @@ class ofApp : public ofBaseApp{
 		float emitterAge;
 		bool bDrawLines;
 		int currentKey;
+		int frameCount = 0;      //This framecount gives the timer for my slide show
+		ofSoundPlayer sound1;    //sound sample
 };
