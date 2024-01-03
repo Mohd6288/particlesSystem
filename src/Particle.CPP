@@ -130,7 +130,7 @@ void Particle::moveAway(float repelX, float repelY) {
     }
 
     if (directionMag < 200) {
-        vel += direction * 20;
+        vel += direction * 2;
     }
 
 }
@@ -148,6 +148,6 @@ void Particle::moveToPoint(float attractX, float attractY) {
         direction = normalize(direction);
     }
 
-    vel += direction * 20;
+    vel += direction * 2;
 
 }
